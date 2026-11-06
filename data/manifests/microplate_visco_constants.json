@@ -1,0 +1,21 @@
+{
+  "regime": "microplate_visco",
+  "description": "Material, geometry, and loading-protocol constants for the MicroPlate visco-hyperelastic plate dataset. LEIA itself uses the stress head on visco (predicts Cauchy stress directly), so the leia/ release does not consume these constants at runtime. They are recorded here as data provenance — for reviewers regenerating the dataset, and for evaluators that compute stress from predicted internal variables instead of the stress head. Names mirror the HDF5 attrs on the `solid_plate_visco` group of microplate_visco.h5.",
+  "material": {
+    "model": "arruda_boyce_3branch_viscoelastic",
+    "Geq_0": 200.0,
+    "lambdaL": 10.0,
+    "Kbulk": 400000.0,
+    "rho": 1.3e-5,
+    "branch_G": [300.0, 600.0, 150.0],
+    "branch_tau": [0.001, 0.2, 3.0]
+  },
+  "bc_speeds": [0.1, 0.06, 0.1, 0.1],
+  "bc_dof_names": ["stretch", "twist", "shear_y", "shear_z"],
+  "bc_speeds_note": "Cumulative BC change per recorded action step, applied by the FEM solver as `bc += inputs * bc_speeds` once per action step (stretch, twist, shear_y, shear_z). The dataset's discrete inputs have shape (n_traj, num_steps, 4) in {-1, 0, +1}, so the physical cumulative BC at step k is `bc_speeds * cumsum(inputs)[k]`. Internally the solver advances in `stride=5` Newmark-beta substeps per action step, each applying bc_speeds/stride = (0.02, 0.012, 0.02, 0.02); intermediate substep states are not stored in the dataset.",
+  "protocol": "load_reverse",
+  "protocol_note": "100 action steps total = `n_forward_steps=50` forward + 50 exact reverse. The reverse half retraces the forward action sequence in reverse order; matched cumulative-BC points between halves have different (u, sigma) due to viscoelastic memory.",
+  "num_steps": 100,
+  "n_forward_steps": 50,
+  "stride": 5
+}

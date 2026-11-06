@@ -1,0 +1,45 @@
+# LEIA production v2 tokenizer recipe — MicroPlate lattice.
+#
+# Pinned from the paper's saved checkpoint config.
+# Trained on 8 × H100, ~13 hours wall.
+
+architecture:
+  num_latents: 512                  # K
+  hidden_dim: 1024                  # H
+  num_encoder_layers: 6
+  num_decoder_layers: 0             # full-mesh stable; FPS-subsampled training
+  num_heads: 4
+  dropout: 0.1
+  n_input_frames: 3                 # 3-frame temporal window
+  stress_head: true                 # universal Cauchy sym6 head
+
+data:
+  mmap_dir: data/microplate_lattice/plate_dataset_curated_mmap_100k
+  exclude_plates: []                # production_plates_v2 manifest provides 55 IDs
+  subsample_n: 10240                # FPS subsample per training sample
+  fps_core_n: 8192                  # FPS deterministic core; remainder drawn once with a fixed seed (same nodes per plate)
+
+losses:
+  recon_weight: 1.0
+  cauchy_stress_weight: 1.0         # universal stress-head supervision
+  cauchy_stress_warmup_steps: 31000 # linear warmup over first ~31% of training
+  sobolev_beta: 0.0                 # not used (stress-head row, not Sobolev)
+  # Material constants (mu, lmbda) are dataset provenance, not tokenizer
+  # hyperparams — sourced from data/manifests/microplate_lattice_constants.json
+  # via leia.regime, not pinned here.
+
+optimization:
+  batch_size: 8                     # per-GPU; 8 GPU * 8 = 64 effective
+  accum_steps: 2
+  lr: 1.0e-4
+  weight_decay: 1.0e-5
+  max_steps: 100000
+  warmup_steps: 0                   # 0 = auto: 5% of max_steps (5000)
+  lr_schedule: cosine
+  bf16: true
+
+logging:
+  wandb_project: leia-tokenizer
+  log_interval: 100
+  val_interval: 1000
+  checkpoint_interval: 5000

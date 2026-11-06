@@ -1,0 +1,14 @@
+{
+  "description": "Held-out / OOD plates for the MicroPlate benchmark. Never seen during training of the production v2 tokenizer or dynamics.",
+  "n_plates": 8,
+  "plates": [
+    "mg_086",
+    "mg_310",
+    "mg_323",
+    "mg_340",
+    "mg_342",
+    "mg_356",
+    "mg_388",
+    "mg_431"
+  ]
+}

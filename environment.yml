@@ -1,0 +1,50 @@
+# LEIA conda environment (PyTorch + FEniCS — Neo-Hookean kernel co-resident)
+# Create:  conda env create -f environment.yml
+# Update:  conda env update -f environment.yml --prune
+#
+# FEniCS (dolfin 2019.1) ships in this env so design-search FEM workers
+# (FEMWorkerPool, spawn-forked from leia) inherit dolfin without env switching.
+# The viscoelastic FEM kernel uses a separate env:
+#   environment-fenicsx.yml  (FEniCSx / dolfinx 0.8)
+
+name: leia
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.10
+  - numpy
+  - scipy
+  - h5py
+  - scikit-learn
+  - psutil           # memory gate in data_curation/fem/run_plate_fem.py
+
+  # FEniCS (FEM solver) — must come from conda-forge
+  - fenics
+
+  - pip
+  - pip:
+    # PyTorch (CUDA 12.6)
+    - torch>=2.10
+    - --extra-index-url https://download.pytorch.org/whl/cu126
+
+    # Visualization & meshing (mesh build runs here, not in FEM env)
+    - pyvista
+    - vtk
+    - tetgen
+    - scikit-image     # marching cubes for SDF → surface (leia.microgen.graph_to_plate_mesh)
+    - meshio           # .vtu export in tests/preview_*.py
+    - numba            # GPU SDF kernel (leia.microgen.graph_to_plate_mesh)
+    - numba-cuda[cu12] # maintained CUDA target + bundled CUDA libs; numba's built-in target cannot compile the SDF kernels
+
+    # Plotting
+    - matplotlib
+    - pillow           # PIL: figure assembly in run_visco_load_reverse.py and design_search/beam/figure.py
+
+    # Video rendering
+    - imageio
+    - imageio-ffmpeg
+
+    # Experiment tracking
+    - wandb

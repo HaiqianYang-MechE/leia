@@ -1,0 +1,13 @@
+{
+  "regime": "microplate_lattice",
+  "description": "Material, geometry, and loading-protocol constants for the MicroPlate lattice dataset. Per-trajectory NPZ files do not carry these — this manifest is the single source of truth that every consumer reads from.",
+  "material": {
+    "model": "neo_hookean",
+    "mu": 1.0,
+    "lmbda": 10.0
+  },
+  "bc_speeds": [0.15, 0.08, 0.15, 0.15],
+  "bc_dof_names": ["stretch", "twist", "shear_y", "shear_z"],
+  "num_steps": 30,
+  "tiles": [5, 5, 1]
+}

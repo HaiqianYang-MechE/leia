@@ -1,0 +1,41 @@
+# LEIA dynamics recipe — MicroPlate visco (load-reverse).
+#
+# Pinned from the paper's saved checkpoint config.
+
+architecture:
+  model: adaln
+  # heads / layers / embed_dim / num_latents derived from tokenizer ckpt
+  dropout: 0.3
+  velocity_input: true              # viscoelastic memory — vel input helps
+  residual: false
+
+data:
+  mmap_dir: data/microplate_visco/dynamics_mmap/train
+  mmap_dir_val: data/microplate_visco/dynamics_mmap/val
+  # actions: the raw per-step increments (±1/0 per DOF) exactly as stored by
+  # build_microplate_visco_mmap — NOT cumulative BC (unlike the lattice model)
+  action_scale: 1.0
+
+method:
+  method: continuous_pf
+  rollout_steps: 20                 # K = 20 — longer rollouts for visco memory
+  noise_std: 0.0                    # noise hurts on this small dataset
+
+optimization:
+  batch_size: 32
+  lr: 3.0e-4
+  weight_decay: 1.0e-4
+  epochs: 300
+  warmup_epochs: 0
+  lr_schedule: cosine
+  bf16: true
+
+eval:
+  ar_eval_trajs: 5
+  ar_eval_interval: 1
+
+tokenizer_checkpoint: checkpoints/tokenizer/<visco-tok run>/best_recon.pt   # recon-only selector; see README § 3
+
+logging:
+  wandb_project: leia-dynamics
+  log_interval: 50

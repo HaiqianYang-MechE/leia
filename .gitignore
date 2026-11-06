@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Bulk artifacts (built locally; see README.md)
+checkpoints/
+outputs/
+wandb/
+design_search/outputs/
+
+# Disposable test artifacts (preview_*.sh outputs)
+tests/_artifacts/
+
+# Data — gitignore everything except small specs/manifests
+data/*
+!data/README.md
+!data/manifests/
+!data/rve_bank/
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Notebook scratch
+.ipynb_checkpoints/
+
+# TetGen scratch
+tetgen-tmpfile_*
+
+# NFS scratch
+.nfs*

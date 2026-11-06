@@ -1,0 +1,43 @@
+# LEIA tokenizer recipe — MicroPlate visco (load-reverse).
+#
+# Pinned from the paper's saved checkpoint config.
+#
+# 363-node fixed mesh, no FPS subsampling (small enough for full mesh per
+# step). Uses dec=4 — restriction "dec=0 for FPS-subsampled large meshes"
+# does not apply here.
+
+architecture:
+  num_latents: 256                  # K
+  hidden_dim: 256                   # H
+  num_encoder_layers: 8
+  num_decoder_layers: 4             # safe on small fixed mesh (no FPS)
+  num_heads: 4
+  dropout: 0.1
+  n_input_frames: 3
+  stress_head: true                 # Arruda-Boyce → stress head is mandatory
+
+data:
+  visco_load_reverse_data: data/microplate_visco/microplate_visco.h5
+  splits_json: data/manifests/microplate_visco_splits.json
+
+losses:
+  recon_weight: 1.0
+  cauchy_stress_weight: 1.0
+  cauchy_stress_warmup_steps: 0     # no warmup; small dataset converges fast
+  sobolev_beta: 0.0                 # not applicable (Arruda-Boyce, not Neo-Hookean)
+
+optimization:
+  batch_size: 64                    # per-GPU; 8 GPU * 64 = 512 effective
+  accum_steps: 1
+  lr: 3.0e-4
+  weight_decay: 1.0e-5
+  max_steps: 30000
+  warmup_steps: 0                   # 0 = auto: 5% of max_steps (1500)
+  lr_schedule: cosine
+  bf16: true
+
+logging:
+  wandb_project: leia-tokenizer
+  log_interval: 50
+  val_interval: 500
+  checkpoint_interval: 1000

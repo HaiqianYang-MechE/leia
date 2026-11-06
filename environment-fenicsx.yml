@@ -1,0 +1,23 @@
+# FEniCSx (dolfinx / FEniCSx 0.8) env for the Arruda-Boyce 3-branch
+# viscoelastic kernel. Used by `physics/fem/visco/` and its caller
+# `data_curation/fem/run_visco_load_reverse.py fem`.
+#
+# Create:  conda env create -f environment-fenicsx.yml
+# Activate: conda activate fenicsx
+
+name: fenicsx
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.11
+  - numpy
+  - scipy
+  - h5py
+  - fenics-dolfinx=0.8.*
+  - mpich
+  - mpi4py
+  - petsc
+  - petsc4py
+

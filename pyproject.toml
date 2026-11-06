@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "leia"
+version = "0.1.0"
+description = "LEIA: Learned Environment for Interactive Architected materials"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "LEIA authors" }]
+
+dependencies = [
+    "numpy",
+    "scipy",
+    "h5py",
+    "torch>=2.10",
+    "pyvista",
+    "tetgen",
+    "scikit-image",         # marching cubes (leia.microgen)
+    "numba",                # GPU SDF kernel (leia.microgen)
+    "numba-cuda[cu12]",     # maintained CUDA target; numba's built-in one cannot compile the SDF kernels
+    "meshio",
+    "psutil",
+    "matplotlib",
+    "pillow",               # PIL: figure assembly (visco runner, design_search/beam/figure.py)
+    "scikit-learn",         # PCA in design_search/landscape
+    "imageio",
+    "imageio-ffmpeg",
+    "wandb",
+]
+
+[tool.setuptools.packages.find]
+include = ["leia*"]
+exclude = ["scripts*", "tests*", "data_curation*", "design_search*", "configs*", "physics*"]
